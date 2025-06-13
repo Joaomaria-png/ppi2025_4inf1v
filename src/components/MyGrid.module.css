@@ -9,6 +9,7 @@
 .main {
     padding: 40px 0; /* Padding superior e inferior para a seção principal */
     min-height: calc(100vh - 180px); /* Garante que a seção principal ocupe a altura restante da tela, ajustando para header e footer */
+
 }
 
 /* Estilos para a Grade de Cards */
@@ -16,7 +17,11 @@
     display: grid; /* Ativa o display de grade */
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Cria colunas responsivas, com mínimo de 280px */
     gap: 20px; /* Espaçamento entre os itens da grade */
-}
+    @media (max-width: 768px) {
+        display: flex; /* Muda de grid para flexbox */
+        flex-direction: column; /* Organiza os cards em uma única coluna */
+        align-items: center; /* Centraliza os cards */
+}}
 
 /* Estilos para os Cards Individuais */
 .card {
@@ -26,6 +31,8 @@
     padding: 20px; /* Padding interno para os cards */
     text-align: center; /* Centraliza o texto dentro dos cards */
     transition: transform 0.3s ease; /* Adiciona uma transição suave para o efeito hover */
+    min-height: 200px;
+    min-width: 350px;
 }
 .card:hover {
     transform: translateY(-5px); /* Efeito de leve levantamento ao passar o mouse */
