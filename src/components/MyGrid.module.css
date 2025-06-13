@@ -4,10 +4,7 @@
     max-width: 1200px; /* Define uma largura máxima para o contêiner */
     margin: 0 auto; /* Centraliza o contêiner na página */
     padding: 20px; /* Adiciona um padding interno ao contêiner */
-    grid-template-area: 
-    "header1"
-    "main"
-    "footer";}
+}
 /* Estilos para a Seção Principal (main) */
 .main {
     padding: 40px 0; /* Padding superior e inferior para a seção principal */
@@ -33,4 +30,3 @@
 .card:hover {
     transform: translateY(-5px); /* Efeito de leve levantamento ao passar o mouse */
 }
-

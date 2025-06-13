@@ -58,7 +58,6 @@ export function MyGrid() {
           {cardData.map((card) => (
             <div key={card.id} className={styles.card}>
               <h2>{card.title}</h2>
-              {}
               <img src={card.imageUrl} alt={card.title} />
               <p>{card.description}</p>
             </div>

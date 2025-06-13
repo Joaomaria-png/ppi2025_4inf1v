@@ -1,8 +1,51 @@
-/* Estilos para o Cabeçalho (header1) */
 .header1 {
-    background-color: #333;
-    padding: 20px 0; /* Padding superior e inferior, sem padding lateral */
-    text-align: center; /* Centraliza o texto dentro do cabeçalho */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Sombra sutil para o cabeçalho */
-    grid-area: header1;
+  display: grid;
+  background-color: #333;
+  padding: 20px 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  grid-area: header1;
+  grid-template-areas: "img title";
+  grid-template-columns: auto 1fr;
+  grid-template-rows: 1fr;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  @media (max-width: 768px) {
+    /* Define a nova estrutura da grade para mobile: imagem acima do título */
+    grid-template-areas:
+      "img"
+      "title";
+    grid-template-columns: 1fr; /* Apenas uma coluna, ocupando toda a largura */
+    grid-template-rows: auto auto; /* Duas linhas: uma para a imagem (auto) e uma para o título (auto) */
+    /* Alinha o conteúdo ao centro em mobile (imagem e título empilhados) */
+    justify-content: center; /* Centraliza a coluna horizontalmente */
+    align-items: center; /* Centraliza o conteúdo verticalmente dentro de cada linha */
+    gap: 10px; /* Reduz o espaçamento entre imagem e título para mobile */
+    padding: 15px 0; /* Ajusta o padding para mobile */
+  }
+}
+
+.title {
+  grid-area: title;
+  font-size: 10rem;
+  color: orange;
+  text-align: center;
+  @media (max-width: 768px) {
+    font-size: 2rem; /* Tamanho da fonte menor para mobile */
+    text-align: center; /* Centraliza o texto quando a imagem está acima */
+  }
+}
+
+.img {
+  grid-area: img;
+  height: 150px;
+  width: 150px;
+  display: block;
+  object-fit: contain;
+  @media (max-width: 768px) {
+    height: 80px; /* Tamanho da imagem menor para mobile */
+    width: 80px;
+    /* Centraliza a imagem horizontalmente quando ela está sozinha em sua linha */
+    margin: 0 auto;
+  }
 }
