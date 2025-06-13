@@ -1,0 +1,8 @@
+/* Estilos para o Cabeçalho (header1) */
+.header1 {
+    background-color: #333;
+    padding: 20px 0; /* Padding superior e inferior, sem padding lateral */
+    text-align: center; /* Centraliza o texto dentro do cabeçalho */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Sombra sutil para o cabeçalho */
+    grid-area: header1;
+}

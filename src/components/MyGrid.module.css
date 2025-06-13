@@ -1,109 +1,36 @@
-.grid {
-  padding: 3rem;
-  display: grid;
-  gap: 3rem;
-  grid-template-columns: repeat(auto-fit, minmax(30rem, 1fr));
-  grid-template-rows: repeat(auto-fit, min-content);
-}
-
-.card {
-  height: 20rem;
-  background-color: var(--primary-dark);
-  color: var(--primary-contrast-light);
-  padding: 1rem;
-  border-radius: 1rem;
-  box-shadow: 0.5rem 0.5rem 1rem rgba(0, 0, 0, 0.5);
-  font-size: 3rem;
-  text-align: center;
-  justify-content: center;
-}
-
+/* Estilo para o Contêiner Principal */
 .container {
-  display: grid;
-
-  /* grid-template-areas:
-    "header1 header1"
-    "aside header2"
-    "aside main"
-    "footer footer";
-
-  grid-template-columns: 1fr 3fr;
-  grid-template-rows: 10rem 5rem auto 10rem;
-
-  @media (max-width: 1200px) {
-    grid-template-areas:
-      "header1"
-      "header2"
-      "main"
-      "footer";
-
-    grid-template-columns: 1fr;
-  } */
-
-  grid-template-areas:
-    "header1 header1 header1"
-    "aside header2 aside2"
-    "aside main aside2"
-    "aside footer aside2"
-    "footer2 footer2 aside2";
-
-  grid-template-columns: 1fr 3fr 1fr;
-  grid-template-rows: 10rem 5rem 50rem 5rem 5rem;
-  @media (max-width: 1200px) {
-    grid-template-areas:
-      "header1 header1 "
-      "aside header2 "
-      "aside main "
-      "aside footer "
-      "footer2 footer2 ";
-    grid-template-columns: 1fr 3fr ;
-    grid-template-rows: 10rem 5rem auto 5rem 5rem;
-  }
-  @media (max-width: 768px) {
-    grid-template-areas:
-      "header2"
-      "main"
-      "footer";
-    grid-template-columns: 1fr;
-    grid-template-rows: 5rem auto 5rem;
-  }
-}
-.header1 {
-  grid-area: header1;
-  background-color: darkslateblue;
-  @media screen and (max-width: 768px) {
-    display: none;
-  }
-}
-.header2 {
-  grid-area: header2;
-  background-color: deepskyblue;
+    display: grid; /* Ativa o display de grade */
+    max-width: 1200px; /* Define uma largura máxima para o contêiner */
+    margin: 0 auto; /* Centraliza o contêiner na página */
+    padding: 20px; /* Adiciona um padding interno ao contêiner */
+    grid-template-area: 
+    "header1"
+    "main"
+    "footer";}
+/* Estilos para a Seção Principal (main) */
+.main {
+    padding: 40px 0; /* Padding superior e inferior para a seção principal */
+    min-height: calc(100vh - 180px); /* Garante que a seção principal ocupe a altura restante da tela, ajustando para header e footer */
 }
 
-.aside {
-  grid-area: aside;
-  background-color: deeppink;
-  @media (max-width: 768px) {
-    display: none;
-  }
-}
-.aside2 {
-  grid-area: aside2;
-  background-color: brown;
-  @media (max-width: 1200px) {
-    display: none;
-  }
+/* Estilos para a Grade de Cards */
+.grid {
+    display: grid; /* Ativa o display de grade */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Cria colunas responsivas, com mínimo de 280px */
+    gap: 20px; /* Espaçamento entre os itens da grade */
 }
 
-.footer {
-  grid-area: footer;
-  background-color: darkslateblue;
+/* Estilos para os Cards Individuais */
+.card {
+    background-color:var(--background); /* Cor de fundopara os cards */
+    border-radius: 8px; /* Borda arredondada para os cards */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para os cards */
+    padding: 20px; /* Padding interno para os cards */
+    text-align: center; /* Centraliza o texto dentro dos cards */
+    transition: transform 0.3s ease; /* Adiciona uma transição suave para o efeito hover */
+}
+.card:hover {
+    transform: translateY(-5px); /* Efeito de leve levantamento ao passar o mouse */
 }
 
-.footer2 {
-  grid-area: footer2;
-  background-color: aquamarine;
-  @media (max-width: 768px) {
-    display: none;
-  }
-}

@@ -1,0 +1,9 @@
+.footer {
+    background-color: #333; /* Cor de fundo escura para o rodapé */
+    color: #fff; /* Cor do texto branca para o rodapé */
+    text-align: center; /* Centraliza o texto dentro do rodapé */
+    padding: 20px 0; /* Padding superior e inferior */
+    margin-top: 40px; /* Margem superior para separar do conteúdo principal */
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2); /* Sombra sutil para o rodapé */
+    grid-area: footer;
+}
