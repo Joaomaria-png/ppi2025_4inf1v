@@ -9,10 +9,10 @@ export  function LuckyNumber() {
   }
 
   return (
-    <div>
+    <div className={styles.container}>
       <h1>Contador = {luckyNumber}</h1>
       <button className={styles.button} onClick={handleIncrement}>
-        Incrementar
+        Incrementar em 1
       </button>
     </div>
   );
