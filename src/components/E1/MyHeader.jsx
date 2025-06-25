@@ -1,5 +1,5 @@
-import styles from "../components/MyHeader.module.css";
-import img from "../imgs/LOGO-ANIMAL-ELETRO.png";
+import styles from "./MyHeader.module.css";
+import img from "../../imgs/LOGO-ANIMAL-ELETRO.png";
 
 export function MyHeader() {
   return (

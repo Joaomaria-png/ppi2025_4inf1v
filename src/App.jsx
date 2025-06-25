@@ -1,14 +1,13 @@
 import "./styles/theme.css";
 import "./styles/global.css";
-import { MyGrid } from "./components/MyGrid";
-import { MyHeader } from "./components/MyHeader";
-import { Myfooter } from "./components/MyFooter";
+import MyHeader from "./components/E1/MyHeader";
+import LuckyNumber from "./components/E2/LuckyNumber";
+
 export default function App() {
   return (
     <>
       <MyHeader />
-      <MyGrid />
-      <Myfooter />
+      <LuckyNumber />
     </>
   );
 }
