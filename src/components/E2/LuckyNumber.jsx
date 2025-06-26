@@ -1,51 +1,63 @@
-import { useState } from 'react';
-import styles from './LuckyNumber.module.css';
+import { useState } from "react";
+import styles from "./LuckyNumber.module.css";
 
 export function LuckyNumber() {
-    // React HOOK - useState()
-    const [luckyNumber, setLuckyNumber] = useState(0);
-    function handleLuckyNumber() {
-        setLuckyNumber(Math.ceil(Math.random() * 31));
-        // O valor atualizado só estará disponível no próximo render
-        console.log(`LuckyNumber atualizado: valor será atualizado`);
-        let history = [];
-        history.push(luckyNumber);
-        console.log('Histórico de Lucky Numbers:', history);
-    }
-    function handleIncrement() {
-        setLuckyNumber((prev) => prev + 1);
-        console.log(`LuckyNumber atualizado: valor será atualizado`);
-    }
-    function handleDecrement() {
-        setLuckyNumber((prev) => prev - 1);
-        console.log(`LuckyNumber atualizado: valor será atualizado`);
-    }
-    function handleZero() {
-        setLuckyNumber(0);
-        console.log(`LuckyNumber atualizado: 0`);
-    }
+  const [luckyNumber, setLuckyNumber] = useState(null);
+  const [blacklist, setBlacklist] = useState([]);
+  const [isRepeated, setIsRepeated] = useState(false);
 
-    return (
-        <div className={styles.container}>
-            {LuckyNumber ? (
-                <h1>Lucky Number = {luckyNumber}</h1>
-            ):
-            (
-                <h1>Lucky Number 🎲</h1>
-            )}
+  function handleLuckyNumber() {
+    const newNumber = Math.floor(Math.random() * 32) + 1;
 
-            <button className={styles.button} onClick={handleLuckyNumber}>
-                Random
-            </button>
-            <button className={styles.button} onClick={handleIncrement}>
-                + 1
-            </button>
-            <button className={styles.button} onClick={handleDecrement}>
-                - 1
-            </button>
-            <button className={styles.button} onClick={handleZero}>
-                = 0
-            </button>
+    setLuckyNumber(newNumber);
+
+    if (blacklist.includes(newNumber)) {
+      setIsRepeated(true);
+    } else {
+      setIsRepeated(false);
+
+      setBlacklist((prevBlacklist) => [...prevBlacklist, newNumber]);
+    }
+  }
+
+  function handleRestart() {
+    setLuckyNumber(null);
+    setBlacklist([]);
+    setIsRepeated(false);
+  }
+
+  return (
+    <div className={styles.container}>
+      {luckyNumber !== null ? (
+        isRepeated ? (
+          <h1>🎉 GRANDE SORTE! Seu número da sorte é {luckyNumber} 🎉</h1>
+        ) : (
+          <h1>Lucky Number = {luckyNumber}</h1>
+        )
+      ) : (
+        <h1>Lucky Number 🎲</h1>
+      )}
+      {!isRepeated && (
+        <button className={styles.button} onClick={handleLuckyNumber}>
+          Random
+        </button>
+      )}
+
+      {isRepeated && (
+        <button className={styles.button} onClick={handleRestart}>
+          Recomeçar
+        </button>
+      )}
+      {
+        <div>
+          <h3>Numeros já sorteados:</h3>
+          <ul>
+            {blacklist.map((num, index) => (
+              <li key={index}>{num}</li>
+            ))}
+          </ul>
         </div>
-    );
+      }
+    </div>
+  );
 }

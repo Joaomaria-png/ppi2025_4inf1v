@@ -5,10 +5,11 @@
     justify-content: center;
     background-color: var(--hover);
     font-size: 3rem;
+    color: var(--text-primary);
 }
 .button {
-    background-color: var(--primary);
-    color: var(--primary-contrast-light);
+    background-color: var(--primary-contrast-dark);
+    color: var(--primary);
     border: none;
     padding: 1rem 2rem;
     font-size: 1.5rem;
