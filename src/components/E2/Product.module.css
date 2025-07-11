@@ -101,7 +101,6 @@
   transform: scale(0.98);
 }
 
-/* Responsividade */
 @media (max-width: 768px) {
   .title {
     font-size: 16px;
