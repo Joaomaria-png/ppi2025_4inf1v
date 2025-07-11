@@ -1,6 +1,7 @@
 import styles from "./ProductList.module.css";
 import { useState, useEffect } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
+import { Product } from "./Product";
 
 export function ProductList() {
   const category = "smartphones";
@@ -11,22 +12,26 @@ export function ProductList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-useEffect(() => {
-  async function fetchProducts() {
-    try {
-      const response = await fetch(apiUrl);
-      const data = await response.json();
-      setProducts(data.products);
-    } catch (error) {
-      setError("Erro ao carregar os produtos.");
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        setProducts(data.products);
+      } catch (error) {
+        setError("Erro ao carregar os produtos.");
+      } finally {
+        setLoading(false);
+      }
     }
-  }
 
-  fetchProducts(); // Chamando a função dentro do useEffect
-}, [apiUrl]);
+    fetchProducts();
+  }, [apiUrl]);
 
+  const handleAddToCart = (product) => {
+    // Função que será implementada no futuro para gerenciar o carrinho
+    console.log("Produto adicionado ao carrinho:", product);
+  };
 
   return (
     <div className={styles.container}>
@@ -48,17 +53,16 @@ useEffect(() => {
       {!loading && !error && (
         <div className={styles.grid}>
           {products.map((product) => (
-            <div key={product.id} className={styles.card}>
-              <img
-                src={product.thumbnail}
-                alt={product.title}
-                className={styles.image}
-              />
-              <h2>{product.title}</h2>
-              <p>{product.description}</p>
-              <p className={styles.price}>${product.price}</p>
-              <p className={styles.brand}>Marca: {product.brand}</p>
-            </div>
+            <Product
+              key={product.id}
+              id={product.id}
+              thumbnail={product.thumbnail}
+              title={product.title}
+              description={product.description}
+              price={product.price}
+              brand={product.brand}
+              onAddToCart={handleAddToCart}
+            />
           ))}
         </div>
       )}
