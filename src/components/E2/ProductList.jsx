@@ -1,12 +1,12 @@
+import { useEffect, useState } from "react";
 import styles from "./ProductList.module.css";
-import { useState, useEffect } from "react";
-import CircularProgress from "@mui/material/CircularProgress";
+import { CircularProgress } from "@mui/material";
 import { Product } from "./Product";
 
-export function ProductList() {
+export function ProductList({ addToCart }) {
   const category = "smartphones";
   const limit = 10;
-  const apiUrl = `https://dummyjson.com/products/category/${category}?limit=${limit}&select=id,thumbnail,brand,title,price,description`;
+  const apiUrl = `https://dummyjson.com/products/category/${category}?limit=${limit}&select=id,thumbnail,title,price,description`;
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,53 +19,33 @@ export function ProductList() {
         const data = await response.json();
         setProducts(data.products);
       } catch (error) {
-        setError("Erro ao carregar os produtos.");
+        setError(error);
       } finally {
         setLoading(false);
       }
     }
 
     fetchProducts();
-  }, [apiUrl]);
-
-  const handleAddToCart = (product) => {
-    // Função que será implementada no futuro para gerenciar o carrinho
-    console.log("Produto adicionado ao carrinho:", product);
-  };
+  }, []);
 
   return (
     <div className={styles.container}>
-      <h1>TJA Megastore</h1>
-
+      <div className={styles.productList}>
+        {products.map(product => (
+          <Product key={product.id} product={product} addToCart={addToCart} />
+        ))}
+      </div>
       {loading && (
-        <div className={styles.loading}>
-          <CircularProgress />
-          <p>Carregando produtos...</p>
+        <div>
+          <CircularProgress
+            thickness={5}
+            style={{ margin: "2rem auto", display: "block" }}
+            sx={{ color: "#001111" }}
+          />
+          <p>Loading products...</p>
         </div>
       )}
-
-      {error && (
-        <div className={styles.error}>
-          <p>Erro: {error}</p>
-        </div>
-      )}
-
-      {!loading && !error && (
-        <div className={styles.grid}>
-          {products.map((product) => (
-            <Product
-              key={product.id}
-              id={product.id}
-              thumbnail={product.thumbnail}
-              title={product.title}
-              description={product.description}
-              price={product.price}
-              brand={product.brand}
-              onAddToCart={handleAddToCart}
-            />
-          ))}
-        </div>
-      )}
+      {error && <p>Error loading products: {error.message} ❌</p>}
     </div>
   );
 }

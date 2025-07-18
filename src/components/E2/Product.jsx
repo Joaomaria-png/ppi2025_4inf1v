@@ -1,47 +1,49 @@
+import React, { useState } from "react";
 import styles from "./Product.module.css";
 
-export function Product({ 
-  id, 
-  thumbnail, 
-  title, 
-  description, 
-  price, 
-  brand,
-  onAddToCart 
-}) {
-  const handleAddToCart = () => {
-    // Função que será implementada no futuro
-    if (onAddToCart) {
-      onAddToCart({ id, title, price, thumbnail });
-    }
-    console.log(`Produto ${title} adicionado ao carrinho!`);
+export function Product({ product, addToCart }) {
+  const [quantity, setQuantity] = useState(0);
+
+  const handleInitialClick = () => {
+    setQuantity(1);
+    addToCart(product, 1);
+  };
+
+  const handleAdd = () => {
+    const newQty = quantity + 1;
+    setQuantity(newQty);
+    addToCart(product, newQty);
+  };
+
+  const handleRemove = () => {
+    const newQty = quantity - 1;
+    const finalQty = newQty < 0 ? 0 : newQty;
+    setQuantity(finalQty);
+    addToCart(product, finalQty);
   };
 
   return (
-    <div className={styles.card}>
-      <div className={styles.imageContainer}>
-        <img
-          src={thumbnail}
-          alt={title}
-          className={styles.image}
-        />
-      </div>
-      
-      <div className={styles.content}>
-        <h2 className={styles.title}>{title}</h2>
-        <p className={styles.brand}>Marca: {brand}</p>
-        <p className={styles.description}>{description}</p>
-        
-        <div className={styles.footer}>
-          <span className={styles.price}>${price}</span>
-          <button 
-            className={styles.addButton}
-            onClick={handleAddToCart}
-          >
-            Adicionar ao Carrinho
-          </button>
+    <div className={styles.productCard}>
+      <img
+        src={product.thumbnail}
+        alt={product.title}
+        className={styles.productImage}
+      />
+      <h2 className={styles.productTitle}>{product.title}</h2>
+      <p className={styles.productDescription}>{product.description}</p>
+      <p className={styles.productPrice}>${product.price}</p>
+
+      {quantity === 0 ? (
+        <button onClick={handleInitialClick} className={styles.productButton}>
+          ADD TO CART
+        </button>
+      ) : (
+        <div className={styles.counterContainer}>
+          <button onClick={handleRemove} className={styles.counterButton}>–</button>
+          <span className={styles.counterText}> {quantity}</span>
+          <button onClick={handleAdd} className={styles.counterButton}>+</button>
         </div>
-      </div>
+      )}
     </div>
   );
 }
