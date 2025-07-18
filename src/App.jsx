@@ -3,7 +3,8 @@ import "./styles/global.css";
 import { ProductList } from "./components/E2/ProductList";
 import { Header } from "./components/E1/Header";
 import { useState } from "react";
-
+import { Routes, Route } from "react-router-dom";
+import { Cart } from "./components/E2/Cart";
 export default function App() {
   const [cart, setCart] = useState([]);
 
@@ -37,7 +38,10 @@ export default function App() {
   return (
     <>
       <Header cart={cart} />
-      <ProductList addToCart={addToCart} />
+      <Routes>
+       <Route path="/" element={ <ProductList addToCart={addToCart} /> }/> 
+       <Route path="/cart" element={ <div className="cart"><Cart cart={cart} /></div> }/>
+      </Routes>
     </>
   );
 }
