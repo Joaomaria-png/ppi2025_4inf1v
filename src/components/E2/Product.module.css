@@ -69,7 +69,7 @@
   font-size: 2.2rem;
   font-weight: bold;
   background-color: var(--primary);
-  color: var(--gray-900);
+  color: var(--primary-light);
   border: none;
   border-radius: 1rem;
   cursor: pointer;
