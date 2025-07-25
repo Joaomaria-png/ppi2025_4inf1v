@@ -1,15 +1,11 @@
-import { ShoppingBasket } from "lucide-react";
 import styles from "./Header.module.css";
-import { Link } from "react-router-dom";
+import { ShoppingBasket } from "lucide-react";
+import { Link } from "react-router";
+import { useContext } from "react";
+import { CartContext } from "../../service/CartContext";
 
-export function Header({ cart }) {
-  // Soma total de unidades (quantidade total)
-  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-
-  // Soma total em dinheiro
-  const totalAmount = cart
-    .reduce((sum, item) => sum + item.quantity * item.price, 0)
-    .toFixed(2);
+export function Header() {
+  const { cart } = useContext(CartContext);
 
   return (
     <div className={styles.container}>
@@ -20,9 +16,14 @@ export function Header({ cart }) {
         <div className={styles.cartInfo}>
           <ShoppingBasket size={32} />
           <p>
-            Total: $ {totalAmount}
+            Total: ${" "}
+            {cart
+              .reduce(
+                (total, product) => total + product.price * product.quantity,
+                0
+              )
+              .toFixed(2)}
           </p>
-          {totalItems > 0 && <p>{totalItems} Produtos</p>}
         </div>
       </Link>
     </div>

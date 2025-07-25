@@ -1,29 +1,13 @@
-import React, { useState } from "react";
 import styles from "./Product.module.css";
+import { useContext } from "react";
+import { CartContext } from "../../service/CartContext";
+import { Link } from "react-router";
 
-export function Product({ product, addToCart }) {
-  const [quantity, setQuantity] = useState(0);
-
-  const handleInitialClick = () => {
-    setQuantity(1);
-    addToCart(product, 1);
-  };
-
-  const handleAdd = () => {
-    const newQty = quantity + 1;
-    setQuantity(newQty);
-    addToCart(product, newQty);
-  };
-
-  const handleRemove = () => {
-    const newQty = quantity - 1;
-    const finalQty = newQty < 0 ? 0 : newQty;
-    setQuantity(finalQty);
-    addToCart(product, finalQty);
-  };
+export function Product({ product }) {
+  const { addToCart } = useContext(CartContext);
 
   return (
-    <div className={styles.productCard}>
+    <div key={product.id} className={styles.productCard}>
       <img
         src={product.thumbnail}
         alt={product.title}
@@ -32,18 +16,16 @@ export function Product({ product, addToCart }) {
       <h2 className={styles.productTitle}>{product.title}</h2>
       <p className={styles.productDescription}>{product.description}</p>
       <p className={styles.productPrice}>${product.price}</p>
-
-      {quantity === 0 ? (
-        <button onClick={handleInitialClick} className={styles.productButton}>
+      <Link to="/cart">
+        <button
+          onClick={() => {
+            addToCart(product);
+          }}
+          className={styles.productButton}
+        >
           ADD TO CART
         </button>
-      ) : (
-        <div className={styles.counterContainer}>
-          <button onClick={handleRemove} className={styles.counterButton}>–</button>
-          <span className={styles.counterText}> {quantity}</span>
-          <button onClick={handleAdd} className={styles.counterButton}>+</button>
-        </div>
-      )}
+      </Link>
     </div>
   );
 }
