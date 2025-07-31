@@ -4,8 +4,9 @@ import { Link } from "react-router";
 import { useContext } from "react";
 import { CartContext } from "../../service/CartContext";
 
-export function Header() {
+export default function Header() {
   const { cart } = useContext(CartContext);
+  const uniqueItemsCount = cart.length;
 
   return (
     <div className={styles.container}>
@@ -14,7 +15,12 @@ export function Header() {
       </Link>
       <Link to="/cart" className={styles.link}>
         <div className={styles.cartInfo}>
-          <ShoppingBasket size={32} />
+          <div className={styles.basketWrapper}>
+            <ShoppingBasket size={32} />
+            {uniqueItemsCount > 0 && (
+              <span className={styles.basketBadge}>{uniqueItemsCount}</span>
+            )}
+          </div>
           <p>
             Total: ${" "}
             {cart

@@ -1,11 +1,9 @@
 import { useState, useEffect, createContext } from "react";
 
 export const CartContext = createContext({
-  // Context to manage the products state
   products: [],
   loading: false,
   error: null,
-  // Context to manage the cart state
   cart: [],
   addToCart: () => {},
   updateQtyCart: () => {},
@@ -13,14 +11,14 @@ export const CartContext = createContext({
 });
 
 export function CartProvider({ children }) {
-  // State to manage products
-  var category = "smartphones";
-  var limit = 10;
-  var apiUrl = `https://dummyjson.com/products/category/${category}?limit=${limit}&select=id,thumbnail,title,price,description`;
+  const category = "smartphones";
+  const limit = 10;
+  const apiUrl = `https://dummyjson.com/products/category/${category}?limit=${limit}&select=id,thumbnail,title,price,description`;
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [cart, setCart] = useState([]);
 
   useEffect(() => {
     async function fetchProducts() {
@@ -37,25 +35,27 @@ export function CartProvider({ children }) {
     fetchProducts();
   }, []);
 
-  // State to manage the cart
-  const [cart, setCart] = useState([]);
-
   function addToCart(product) {
-    // Check if the product is already in the cart
     const existingProduct = cart.find((item) => item.id === product.id);
     if (existingProduct) {
       updateQtyCart(product.id, existingProduct.quantity + 1);
     } else {
-      setCart((prevCart) => [...prevCart, {...product, quantity: 1}]);
+      setCart((prevCart) => [...prevCart, { ...product, quantity: 1 }]);
     }
   }
 
   function updateQtyCart(productId, quantity) {
-    setCart((prevCart) =>
-      prevCart.map((item) =>
+    setCart((prevCart) => {
+      if (quantity <= 0) {
+        // 🧹 Remove o item do carrinho
+        return prevCart.filter((item) => item.id !== productId);
+      }
+
+      // Atualiza a quantidade normalmente
+      return prevCart.map((item) =>
         item.id === productId ? { ...item, quantity: quantity } : item
-      )
-    );
+      );
+    });
   }
 
   function clearCart() {
@@ -63,16 +63,18 @@ export function CartProvider({ children }) {
   }
 
   const context = {
-    products: products,
-    loading: loading,
-    error: error,
-    cart: cart,
-    addToCart: addToCart,
-    updateQtyCart: updateQtyCart,
-    clearCart: clearCart,
+    products,
+    loading,
+    error,
+    cart,
+    addToCart,
+    updateQtyCart,
+    clearCart,
   };
 
   return (
-    <CartContext.Provider value={context}>{children}</CartContext.Provider>
+    <CartContext.Provider value={context}>
+      {children}
+    </CartContext.Provider>
   );
 }

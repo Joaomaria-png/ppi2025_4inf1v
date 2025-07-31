@@ -6,17 +6,23 @@
   padding: 5rem;
   background-color: var(--primary-dark);
 }
+
 .container h1 {
   font-size: 5rem;
   font-weight: bolder;
 }
+
 .containerImg img {
   height: auto;
   width: 100%;
   max-width: 20rem;
 }
 
+/* Área do carrinho */
 .cartInfo {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
   border-radius: 3rem;
   background-color: var(--primary-light);
   color: var(--primary-contrast-dark);
@@ -24,4 +30,25 @@
   font-size: 3rem;
   font-weight: bold;
   text-align: center;
+  position: relative;
+}
+
+/* Wrapper do ícone + badge */
+.basketWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* Badge com número de itens */
+.basketBadge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: crimson;
+  color: white;
+  font-size: 1.6rem;
+  font-weight: bold;
+  border-radius: 50%;
+  padding: 0.4rem 1rem;
+  line-height: 1;
 }

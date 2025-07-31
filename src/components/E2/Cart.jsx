@@ -11,32 +11,39 @@ export function Cart() {
       {cart.length === 0 ? (
         <p>Your cart is empty.</p>
       ) : (
-        <ul>
-          {cart.map((product, index) => (
-            <li key={index} className={styles.cartItem}>
-              <img src={product.thumbnail} alt={product.title} />
-              <h3>{product.title}</h3>
-              <p>${product.price.toFixed(2)}</p>
-              <div className={styles.quantityControls}>
-                <button
-                  onClick={() =>
-                    updateQtyCart(product.id, product.quantity - 1)
-                  }
-                >
-                  -
-                </button>
-                <span>{product.quantity}</span>
-                <button
-                  onClick={() =>
-                    updateQtyCart(product.id, product.quantity + 1)
-                  }
-                >
-                  +
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <>
+          <ul className={styles.cartList}>
+            {cart.map((product, index) => (
+              <li key={index} className={styles.cartItem}>
+                <img src={product.thumbnail} alt={product.title} />
+                <div className={styles.cartItemText}>
+                  <h3>{product.title}</h3>
+                  <p>${product.price.toFixed(2)}</p>
+                </div>
+                <div className={styles.quantityControl}>
+                  <button
+                    onClick={() =>
+                      updateQtyCart(product.id, product.quantity - 1)
+                    }
+                  >
+                    -
+                  </button>
+                  <span>{product.quantity}</span>
+                  <button
+                    onClick={() =>
+                      updateQtyCart(product.id, product.quantity + 1)
+                    }
+                  >
+                    +
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <button className={styles.clearCartBtn} onClick={clearCart}>
+            Clear Cart
+          </button>
+        </>
       )}
     </div>
   );
