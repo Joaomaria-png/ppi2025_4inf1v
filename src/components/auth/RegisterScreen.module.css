@@ -1,0 +1,92 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: var(--background-color); /* Supondo uma variável de cor de fundo */
+  padding: 2rem;
+  color: var(--text-color-dark); /* Supondo uma variável para a cor do texto */
+}
+
+.form {
+  background: var(--surface-color); /* Supondo uma cor para o fundo do formulário */
+  padding: 4rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 500px;
+  box-sizing: border-box;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 3rem;
+  color: var(--primary-dark);
+}
+
+.formGroup {
+  margin-bottom: 2rem;
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.8rem;
+  font-weight: bold;
+  font-size: 1.8rem;
+  color: var(--text-color-dark);
+}
+
+.input {
+  width: 100%;
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  font-size: 1.6rem;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.3); /* Efeito de foco suave */
+}
+
+.button {
+  width: 100%;
+  padding: 1.5rem;
+  background-color: var(--primary-color);
+  color: var(--text-color-light);
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 2rem;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.button:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px); /* Efeito de elevação sutil */
+}
+
+.linkText {
+  margin-top: 2rem;
+  font-size: 1.6rem;
+  color: var(--text-color-dark);
+  text-align: center;
+}
+
+.link {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.link:hover {
+  color: var(--primary-dark);
+  text-decoration: underline;
+}
