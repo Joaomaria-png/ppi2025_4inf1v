@@ -5,26 +5,31 @@ import { useContext, useRef, useEffect, useState } from "react";
 import { CartContext } from "../../service/CartContext";
 
 export default function ProductList() {
-  const { products, loading, error } = useContext(CartContext);
+  const { products: contextProducts, loading, error } = useContext(CartContext);
   const searchInput = useRef(null);
+  const [combinedProducts, setCombinedProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
 
   useEffect(() => {
-    // Inicializa a lista com todos os produtos ao carregar
-    setFilteredProducts(products);
-  }, [products]);
+    const localProducts = JSON.parse(localStorage.getItem('products')) || [];
+
+    // Mescla os produtos do contexto com os do localStorage
+    const allProducts = [...contextProducts, ...localProducts];
+    setCombinedProducts(allProducts);
+    setFilteredProducts(allProducts);
+  }, [contextProducts]);
 
   function handleSearch() {
     const query = searchInput.current.value.toLowerCase();
-    const filtered = products.filter((product) =>
-      product.title.toLowerCase().includes(query)
+    const filtered = combinedProducts.filter((product) =>
+      product.name?.toLowerCase().includes(query) || product.title?.toLowerCase().includes(query)
     );
     setFilteredProducts(filtered);
   }
 
   function handleClear() {
     searchInput.current.value = "";
-    setFilteredProducts(products); // 🔁 restaura a lista original
+    setFilteredProducts(combinedProducts);
   }
 
   return (
@@ -41,11 +46,13 @@ export default function ProductList() {
           Clear
         </button>
       </div>
+
       <div className={styles.productList}>
         {filteredProducts.map((product) => (
           <Product key={product.id} product={product} />
         ))}
       </div>
+
       {loading && (
         <div>
           <CircularProgress

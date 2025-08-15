@@ -1,6 +1,6 @@
 import styles from "./Header.module.css";
 import { ShoppingBasket } from "lucide-react";
-import { Link } from "react-router-dom"; // Corrigido: 'react-router' -> 'react-router-dom'
+import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { CartContext } from "../../service/CartContext";
 
@@ -15,15 +15,20 @@ export default function Header() {
       </Link>
 
       <div className={styles.rightSection}>
-        {/* Novos botões de Login e Registro */}
+        {/* Botão para editar produtos */}
+        <Link to="/products/admin" className={styles.authButton}>
+          Editar Produtos
+        </Link>
+
+        {/* Botões de Login e Registro */}
         <Link to="/login" className={styles.authButton}>
           Login
         </Link>
         <Link to="/register" className={styles.authButton}>
           Registro
         </Link>
-        
-        {/* Seção do carrinho de compras */}
+
+        {/* Carrinho */}
         <Link to="/cart" className={styles.link}>
           <div className={styles.cartInfo}>
             <div className={styles.basketWrapper}>

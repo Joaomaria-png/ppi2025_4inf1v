@@ -1,30 +1,36 @@
 .container {
-  max-width: 900px;
-  margin: 20px auto;
-  padding: 20px;
-  background: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 40px;
+  background: #fefefe;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
 }
 
 .title {
-  color: #333;
+  color: #222;
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin: 0;
 }
 
 .addButton {
-  padding: 10px 20px;
+  padding: 12px 24px;
   background-color: #28a745;
   color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
+  font-weight: 600;
+  text-decoration: none;
   transition: background-color 0.3s ease;
 }
 
@@ -33,55 +39,71 @@
 }
 
 .productList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
   list-style: none;
   padding: 0;
+  margin: 0;
+  align-items: stretch; /* garante altura uniforme */
 }
 
 .productItem {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #fff;
-  padding: 15px;
-  margin-bottom: 10px;
-  border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  text-align: center;
+  transition: box-shadow 0.3s ease;
+}
+
+.productItem:hover {
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
 }
 
 .productImage {
-  width: 80px;
-  height: 80px;
+  width: 140px;
+  height: 140px;
   object-fit: cover;
-  border-radius: 4px;
-  margin-right: 15px;
+  border-radius: 8px;
+  margin: 0 auto 20px;
 }
 
 .productDetails {
-  flex-grow: 1;
+  margin-bottom: 20px;
 }
 
 .productName {
-  margin: 0 0 5px 0;
+  font-size: 1.3rem;
+  font-weight: 600;
   color: #333;
+  margin-bottom: 8px;
 }
 
 .productPrice {
-  margin: 0;
+  font-size: 1.1rem;
   color: #555;
   font-weight: bold;
+  margin-bottom: 6px;
 }
 
 .buttonGroup {
   display: flex;
-  gap: 10px;
+  gap: 12px;
+  justify-content: center;
+  margin-top: auto;
 }
 
-.editButton, .deleteButton {
-  padding: 8px 12px;
+.editButton,
+.deleteButton {
+  padding: 10px 16px;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
+  font-weight: 600;
   transition: background-color 0.3s ease;
 }
 
