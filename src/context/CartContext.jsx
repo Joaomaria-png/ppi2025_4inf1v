@@ -14,6 +14,42 @@ export const CartContext = createContext({
   clearCart: () => {},
 });
 
+const [session, setSession] = useState(null)
+const [sessionLoading, setSessionLoading] = useState(null)
+const [sessionMessage, setSessionMessage] = useState(null)
+const [sessionrror, setSessionError] = useState(null)
+
+async function handleSignUo(email, password, username) {
+  setSessionLoading(true)
+  setSessionMessage(null)
+  setSessionError(null)
+
+  try{
+    const {data, error} = await supabase.auth.singUp({
+      email,
+      password,
+      options: {
+        data: {
+          username: username,
+          admin: false,
+        },
+        emailRedirectTo: '${window.location.origin}/signin',
+      },
+    });
+
+    if (error) throw error;
+
+    if(data.user) {
+      setSessionMessage("Registration sucessful! Check your email to confirm your account.")
+    }
+
+  } catch(error) {
+    setSessionError(error.message)
+  } finally{
+    setSessionLoading(false)
+  }
+}
+
 export function CartProvider({ children }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
