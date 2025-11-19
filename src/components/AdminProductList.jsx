@@ -4,6 +4,7 @@ import { useSession } from "../context/SessionContext";
 export function AdminProductList() {
   const { products } = useCart();
   const { session } = useSession();
+  
 
   // Verifica se o usuário é admin
   const isAdmin = session?.user?.user_metadata?.admin;
