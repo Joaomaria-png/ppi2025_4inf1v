@@ -1,26 +1,8 @@
-import { useState, useEffect, createContext } from "react";
+import { useState, useEffect, createContext, useContext } from "react";
 import { supabase } from "../utils/supabase";
+import { useSession } from "./SessionContext";
 
-export const CartContext = createContext({
-  // Context to manage the products state
-  products: [],
-  loading: false,
-  error: null,
-  // Context to manage the cart state
-  cart: [],
-  addToCart: () => {},
-  updateQtyCart: () => {},
-  removeFromCart: () => {},
-  clearCart: () => {},
-  // Context to manage user session
-  session: null,
-  sessionLoading: false,
-  sessionMessage: null,
-  sessionError: null,
-  handleSignUp: () => {},
-  handleSignIn: () => {},
-  handleSignOut: () => {},
-});
+export const CartContext = createContext();
 
 const [session, setSession] = useState(null)
 const [sessionLoading, setSessionLoading] = useState(null)
@@ -59,171 +41,76 @@ async function handleSignUo(email, password, username) {
 }
 
 export function CartProvider({ children }) {
+  const { session } = useSession();
+  const userId = session?.user?.id;
+
   const [products, setProducts] = useState([]);
+  const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Carrega produtos da loja
   useEffect(() => {
-    async function fetchProductsSupabase() {
+    async function fetchProducts() {
       const { data, error } = await supabase.from("product_2v").select();
-      if (error) {
-        setError(`Fetching products failed! ${error.message}`);
-      } else {
-        setProducts(data);
-      }
+      if (error) setError(error.message);
+      else setProducts(data);
       setLoading(false);
     }
-    fetchProductsSupabase();
-    // State to manage products API
-    // var category = "smartphones";
-    // var limit = 10;
-    // var apiUrl = `https://dummyjson.com/products/category/${category}?limit=${limit}&select=id,thumbnail,title,price,description`;
-
-    // async function fetchProducts() {
-    //   try {
-    //     const response = await fetch(apiUrl);
-    //     const data = await response.json();
-    //     setProducts(data.products);
-    //   } catch (error) {
-    //     setError(error);
-    //   } finally {
-    //     setLoading(false);
-    //   }
-    // }
-    // fetchProducts();
+    fetchProducts();
   }, []);
 
-  // State to manage the cart
-  const [cart, setCart] = useState([]);
+  // Carrega carrinho do usuário
+  useEffect(() => {
+    if (userId) refreshCart();
+  }, [userId]);
 
-  function addToCart(product) {
-    // Check if the product is already in the cart
-    const existingProduct = cart.find((item) => item.id === product.id);
-    if (existingProduct) {
-      updateQtyCart(product.id, existingProduct.quantity + 1);
-    } else {
-      setCart((prevCart) => [...prevCart, { ...product, quantity: 1 }]);
-    }
+  async function refreshCart() {
+    const { data } = await supabase.from("CART").select("*").eq("user_id", userId);
+    setCart(data || []);
   }
 
-  function removeFromCart(productId) {
-    setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
+  async function addToCart(product) {
+    const existing = cart.find((item) => item.product_id === product.id);
+    const quantity = existing ? existing.quantity + 1 : 1;
+
+    await supabase.from("CART").upsert({
+      user_id: userId,
+      product_id: product.id,
+      quantity,
+    });
+    refreshCart();
   }
 
-  function updateQtyCart(productId, quantity) {
-    setCart((prevCart) =>
-      prevCart.map((item) =>
-        item.id === productId ? { ...item, quantity: quantity } : item
-      )
-    );
+  async function updateQtyCart(productId, quantity) {
+    await supabase.from("CART").update({ quantity }).match({ user_id: userId, product_id: productId });
+    refreshCart();
   }
 
-  function clearCart() {
+  async function removeFromCart(productId) {
+    await supabase.from("CART").delete().match({ user_id: userId, product_id: productId });
+    refreshCart();
+  }
+
+  async function clearCart() {
+    await supabase.from("CART").delete().match({ user_id: userId });
     setCart([]);
   }
 
-  // User Session Management
-  const [session, setSession] = useState(null);
-  const [sessionLoading, setSessionLoading] = useState(false);
-  const [sessionMessage, setSessionMessage] = useState(null);
-  const [sessionError, setSessionError] = useState(null);
-
-  async function handleSignUp(email, password, username) {
-    setSessionLoading(true);
-    setSessionMessage(null);
-    setSessionError(null);
-
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            username: username,
-            admin: false,
-          },
-          emailRedirectTo: `${window.location.origin}/signin`,
-        },
-      });
-
-      if (error) throw error;
-
-      if (data.user) {
-        setSessionMessage(
-          "Registration successful! Check your email to confirm your account."
-        );
-        window.location.href = "/signin";
-      }
-    } catch (error) {
-      setSessionError(error.message);
-    } finally {
-      setSessionLoading(false);
-    }
-  }
-
-  async function handleSignIn(email, password) {
-    setSessionLoading(true);
-    setSessionMessage(null);
-    setSessionError(null);
-
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) throw error;
-
-      if(data.session){
-        setSession(data.session);
-        setSessionMessage("Sign in successful!");
-      }
-    } catch (error) {
-      setSessionError(error.message);
-    } finally {
-      setSessionLoading(false);
-    }
-  }
-
-  async function handleSignOut() {
-    setSessionLoading(true);
-    setSessionMessage(null);
-    setSessionError(null);
-
-    try {
-      const { error } = await supabase.auth.signOut();
-
-      if (error) throw error;
-
-      setSession(null);
-      window.location.href = "/";
-    } catch (error) {
-      setSessionError(error.message);
-    } finally {
-      setSessionLoading(false);
-    }
-  }
-
-  const context = {
-    products: products,
-    loading: loading,
-    error: error,
-    cart: cart,
-    addToCart: addToCart,
-    updateQtyCart: updateQtyCart,
-    removeFromCart: removeFromCart,
-    clearCart: clearCart,
-    // Context to manage user session
-    session: session,
-    sessionLoading: sessionLoading,
-    sessionMessage: sessionMessage,
-    sessionError: sessionError,
-    handleSignUp: handleSignUp,
-    handleSignIn: handleSignIn,
-    handleSignOut: handleSignOut,
-  };
-
   return (
-    <CartContext.Provider value={context}>{children}</CartContext.Provider>
+    <CartContext.Provider value={{
+      products,
+      cart,
+      loading,
+      error,
+      addToCart,
+      updateQtyCart,
+      removeFromCart,
+      clearCart,
+    }}>
+      {children}
+    </CartContext.Provider>
   );
 }
+
+export const useCart = () => useContext(CartContext);
