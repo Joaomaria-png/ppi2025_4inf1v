@@ -9,90 +9,129 @@ export function CartProvider({ children }) {
   const userId = session?.user?.id;
 
   const [products, setProducts] = useState([]);
+  const [productsLoading, setProductsLoading] = useState(true);
+
   const [cart, setCart] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [cartLoading, setCartLoading] = useState(false);
+
   const [error, setError] = useState(null);
 
-  // Carrega produtos da loja
+  // ----------------------------
+  // 🟦 Carrega produtos
+  // ----------------------------
   useEffect(() => {
     async function fetchProducts() {
-      const { data, error } = await supabase.from("products").select(); // 👈 nome certo da tabela
-      if (error) setError(error.message);
-      else setProducts(data);
-      setLoading(false);
+      setProductsLoading(true);
+
+      const { data, error } = await supabase.from("products").select("*");
+
+      if (error) {
+        setError(error.message);
+        setProducts([]);
+      } else {
+        setProducts(data || []);
+      }
+
+      setProductsLoading(false);
     }
+
     fetchProducts();
   }, []);
 
-  // Carrega carrinho do usuário
+  // ----------------------------
+  // 🟨 Carrega carrinho do usuário logado
+  // ----------------------------
   useEffect(() => {
-    if (userId) refreshCart();
-  }, [userId]);
+    if (session) refreshCart();
+  }, [session]);
 
   async function refreshCart() {
+    setCartLoading(true);
+
     const { data, error } = await supabase
       .from("cart")
-      .select("*")
-      .eq("userId", userId); // 👈 coluna camelCase
+      .select("*, products(*)") // pega dados do produto
+      .eq("user_id", userId);
 
     if (error) {
-      console.error("Erro ao carregar carrinho:", error.message);
+      setError(error.message);
       setCart([]);
-    } else {
-      setCart(data || []);
-    }
-  }
-
-  async function addToCart(product) {
-    if (!userId) {
-      alert("Você precisa estar logado para adicionar ao carrinho!");
+      setCartLoading(false);
       return;
     }
 
-    const existing = cart.find((item) => item.productId === product.id);
+    // 🔄 Mapeia dados corretamente
+    const fullCart = data.map((item) => ({
+      id: item.product_id,
+      qty: item.qty,
+      title: item.products.title,
+      price: item.products.price,
+      thumbnail: item.products.thumbnail,
+      description: item.products.description,
+    }));
+
+    setCart(fullCart);
+    setCartLoading(false);
+  }
+
+  // ----------------------------
+  // 🟩 Adicionar ao carrinho
+  // ----------------------------
+  async function addToCart(product) {
+    if (!session) {
+      alert("Você precisa estar logado!");
+      return;
+    }
+
+    const existing = cart.find((item) => item.id === product.id);
     const qty = existing ? existing.qty + 1 : 1;
 
     const { error } = await supabase.from("cart").upsert({
-      userId: userId,
-      productId: product.id,
+      user_id: userId,
+      product_id: product.id,
       qty,
     });
 
-    if (error) {
-      console.error("Erro ao adicionar ao carrinho:", error.message);
-    }
+    if (error) setError(error.message);
+
     refreshCart();
   }
 
+  // ----------------------------
+  // 🟧 Atualizar quantidade
+  // ----------------------------
   async function updateQtyCart(productId, qty) {
+    if (qty < 1) return removeFromCart(productId);
+
     const { error } = await supabase
       .from("cart")
       .update({ qty })
-      .match({ userId: userId, productId });
+      .match({ user_id: userId, product_id: productId });
 
-    if (error) {
-      console.error("Erro ao atualizar quantidade:", error.message);
-    }
+    if (error) setError(error.message);
+
     refreshCart();
   }
 
+  // ----------------------------
+  // 🟥 Remover item
+  // ----------------------------
   async function removeFromCart(productId) {
     const { error } = await supabase
       .from("cart")
       .delete()
-      .match({ userId: userId, productId });
+      .match({ user_id: userId, product_id: productId });
 
-    if (error) {
-      console.error("Erro ao remover item:", error.message);
-    }
+    if (error) setError(error.message);
+
     refreshCart();
   }
 
+  // ----------------------------
+  // ⬛ Limpar carrinho
+  // ----------------------------
   async function clearCart() {
-    const { error } = await supabase.from("cart").delete().match({ userId: userId });
-    if (error) {
-      console.error("Erro ao limpar carrinho:", error.message);
-    }
+    await supabase.from("cart").delete().eq("user_id", userId);
     setCart([]);
   }
 
@@ -100,8 +139,9 @@ export function CartProvider({ children }) {
     <CartContext.Provider
       value={{
         products,
+        productsLoading,
         cart,
-        loading,
+        cartLoading,
         error,
         addToCart,
         updateQtyCart,

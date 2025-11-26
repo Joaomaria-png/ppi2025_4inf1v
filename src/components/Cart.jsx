@@ -10,33 +10,42 @@ export function Cart() {
   return (
     <div className={styles.cart}>
       <h2>Shopping Cart</h2>
+
       {cart.length === 0 ? (
         <p>Your cart is empty.</p>
       ) : (
         <ul>
-          {cart.map((product, index) => (
-            <li key={index} className={styles.cartItem}>
+          {cart.map((product) => (
+            <li key={product.id} className={styles.cartItem}>
               <img src={product.thumbnail} alt={product.title} />
+
               <h3>{product.title}</h3>
-              <p>${product.price.toFixed(2)}</p>
+
+              <p>${Number(product.price).toFixed(2)}</p>
+
+              {/* Quantity controls */}
               <div className={styles.quantityControls}>
                 <button
-                  disabled={product.quantity <= 1}
+                  disabled={product.qty <= 1}
                   onClick={() =>
-                    updateQtyCart(product.id, product.quantity - 1)
+                    updateQtyCart(product.id, product.qty - 1)
                   }
                 >
                   -
                 </button>
-                <span>{product.quantity}</span>
+
+                <span>{product.qty}</span>
+
                 <button
                   onClick={() =>
-                    updateQtyCart(product.id, product.quantity + 1)
+                    updateQtyCart(product.id, product.qty + 1)
                   }
                 >
                   +
                 </button>
               </div>
+
+              {/* Remove one item */}
               <button
                 onClick={() => removeFromCart(product.id)}
                 className={styles.removeButton}
@@ -47,6 +56,8 @@ export function Cart() {
           ))}
         </ul>
       )}
+
+      {/* Clear entire cart */}
       {cart.length > 0 && (
         <button onClick={clearCart} className={styles.removeButton}>
           CLEAR CART <Trash />
