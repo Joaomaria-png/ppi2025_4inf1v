@@ -9,12 +9,18 @@ import { SessionProvider, useSession } from "./context/SessionContext";
 import { Login } from "./components/Login";
 import { ToastContainer } from "react-toastify";
 import { User } from "./components/User";
-import { AdminProductList } from "./components/AdminProductList"; // novo import
+import { AdminProductList } from "./components/AdminProductList";
 
 // 🔒 Rota protegida para admin
 function AdminRoute({ children }) {
   const { isAdmin } = useSession();
   return isAdmin ? children : <Navigate to="/" replace />;
+}
+
+// 🔒 Rota protegida para usuário logado
+function PrivateRoute({ children }) {
+  const { session } = useSession();
+  return session ? children : <Navigate to="/signin" replace />;
 }
 
 export default function App() {
@@ -30,7 +36,14 @@ export default function App() {
               <Route path="/cart" element={<Cart />} />
               <Route path="/signin" element={<Login value="signin" />} />
               <Route path="/register" element={<Login value="register" />} />
-              <Route path="/user" element={<User />} />
+              <Route
+                path="/user"
+                element={
+                  <PrivateRoute>
+                    <User />
+                  </PrivateRoute>
+                }
+              />
               <Route
                 path="/admin"
                 element={
