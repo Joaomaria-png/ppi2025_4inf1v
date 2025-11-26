@@ -13,6 +13,15 @@ export function SessionProvider({ children }) {
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
     });
+
+    // Listener para mudanças de auth
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, currentSession) => {
+      setSession(currentSession);
+    });
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
   async function handleSignUp(email, password, username) {
@@ -31,7 +40,6 @@ export function SessionProvider({ children }) {
       if (error) throw error;
       if (data.user) {
         setSessionMessage("Cadastro realizado! Verifique seu e-mail.");
-        window.location.href = "/signin";
       }
     } catch (error) {
       setSessionError(error.message);
@@ -66,7 +74,7 @@ export function SessionProvider({ children }) {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       setSession(null);
-      window.location.href = "/";
+      setSessionMessage("Logout realizado com sucesso!");
     } catch (error) {
       setSessionError(error.message);
     } finally {
@@ -75,15 +83,17 @@ export function SessionProvider({ children }) {
   }
 
   return (
-    <SessionContext.Provider value={{
-      session,
-      sessionLoading,
-      sessionMessage,
-      sessionError,
-      handleSignUp,
-      handleSignIn,
-      handleSignOut,
-    }}>
+    <SessionContext.Provider
+      value={{
+        session,
+        sessionLoading,
+        sessionMessage,
+        sessionError,
+        handleSignUp,
+        handleSignIn,
+        handleSignOut,
+      }}
+    >
       {children}
     </SessionContext.Provider>
   );

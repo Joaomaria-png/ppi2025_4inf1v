@@ -4,42 +4,6 @@ import { useSession } from "./SessionContext";
 
 export const CartContext = createContext();
 
-const [session, setSession] = useState(null)
-const [sessionLoading, setSessionLoading] = useState(null)
-const [sessionMessage, setSessionMessage] = useState(null)
-const [sessionrror, setSessionError] = useState(null)
-
-async function handleSignUo(email, password, username) {
-  setSessionLoading(true)
-  setSessionMessage(null)
-  setSessionError(null)
-
-  try{
-    const {data, error} = await supabase.auth.singUp({
-      email,
-      password,
-      options: {
-        data: {
-          username: username,
-          admin: false,
-        },
-        emailRedirectTo: '${window.location.origin}/signin',
-      },
-    });
-
-    if (error) throw error;
-
-    if(data.user) {
-      setSessionMessage("Registration sucessful! Check your email to confirm your account.")
-    }
-
-  } catch(error) {
-    setSessionError(error.message)
-  } finally{
-    setSessionLoading(false)
-  }
-}
-
 export function CartProvider({ children }) {
   const { session } = useSession();
   const userId = session?.user?.id;
@@ -52,7 +16,7 @@ export function CartProvider({ children }) {
   // Carrega produtos da loja
   useEffect(() => {
     async function fetchProducts() {
-      const { data, error } = await supabase.from("product_2v").select();
+      const { data, error } = await supabase.from("products").select(); // 👈 nome certo da tabela
       if (error) setError(error.message);
       else setProducts(data);
       setLoading(false);
@@ -66,48 +30,85 @@ export function CartProvider({ children }) {
   }, [userId]);
 
   async function refreshCart() {
-    const { data } = await supabase.from("CART").select("*").eq("user_id", userId);
-    setCart(data || []);
+    const { data, error } = await supabase
+      .from("cart")
+      .select("*")
+      .eq("userId", userId); // 👈 coluna camelCase
+
+    if (error) {
+      console.error("Erro ao carregar carrinho:", error.message);
+      setCart([]);
+    } else {
+      setCart(data || []);
+    }
   }
 
   async function addToCart(product) {
-    const existing = cart.find((item) => item.product_id === product.id);
-    const quantity = existing ? existing.quantity + 1 : 1;
+    if (!userId) {
+      alert("Você precisa estar logado para adicionar ao carrinho!");
+      return;
+    }
 
-    await supabase.from("CART").upsert({
-      user_id: userId,
-      product_id: product.id,
-      quantity,
+    const existing = cart.find((item) => item.productId === product.id);
+    const qty = existing ? existing.qty + 1 : 1;
+
+    const { error } = await supabase.from("cart").upsert({
+      userId: userId,
+      productId: product.id,
+      qty,
     });
+
+    if (error) {
+      console.error("Erro ao adicionar ao carrinho:", error.message);
+    }
     refreshCart();
   }
 
-  async function updateQtyCart(productId, quantity) {
-    await supabase.from("CART").update({ quantity }).match({ user_id: userId, product_id: productId });
+  async function updateQtyCart(productId, qty) {
+    const { error } = await supabase
+      .from("cart")
+      .update({ qty })
+      .match({ userId: userId, productId });
+
+    if (error) {
+      console.error("Erro ao atualizar quantidade:", error.message);
+    }
     refreshCart();
   }
 
   async function removeFromCart(productId) {
-    await supabase.from("CART").delete().match({ user_id: userId, product_id: productId });
+    const { error } = await supabase
+      .from("cart")
+      .delete()
+      .match({ userId: userId, productId });
+
+    if (error) {
+      console.error("Erro ao remover item:", error.message);
+    }
     refreshCart();
   }
 
   async function clearCart() {
-    await supabase.from("CART").delete().match({ user_id: userId });
+    const { error } = await supabase.from("cart").delete().match({ userId: userId });
+    if (error) {
+      console.error("Erro ao limpar carrinho:", error.message);
+    }
     setCart([]);
   }
 
   return (
-    <CartContext.Provider value={{
-      products,
-      cart,
-      loading,
-      error,
-      addToCart,
-      updateQtyCart,
-      removeFromCart,
-      clearCart,
-    }}>
+    <CartContext.Provider
+      value={{
+        products,
+        cart,
+        loading,
+        error,
+        addToCart,
+        updateQtyCart,
+        removeFromCart,
+        clearCart,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );

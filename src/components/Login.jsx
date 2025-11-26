@@ -1,15 +1,14 @@
 import styles from "./Login.module.css";
-import { useState, useContext, useEffect } from "react";
-import { CartContext } from "../context/CartContext";
+import { useState, useEffect } from "react";
 import { Field } from "@base-ui-components/react/field";
 import { Form } from "@base-ui-components/react/form";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { toast, Bounce } from "react-toastify";
 import { CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router";
+import { useSession } from "../context/SessionContext"; // 👈 agora usando SessionContext
 
 export function Login({ value }) {
-  // User Context
   const {
     handleSignIn,
     handleSignUp,
@@ -17,7 +16,7 @@ export function Login({ value }) {
     sessionLoading,
     sessionMessage,
     sessionError,
-  } = useContext(CartContext);
+  } = useSession();
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -27,8 +26,7 @@ export function Login({ value }) {
   }, [session, navigate]);
 
   const [errors, setErrors] = useState({});
-  // const [loading, setLoading] = useState(false);
-  const [mode, setMode] = useState(value); // "signin" or "register"
+  const [mode, setMode] = useState(value); // "signin" ou "register"
   const [showPassword, setShowPassword] = useState(false);
   const [formValues, setFormValues] = useState({
     email: "",
@@ -42,55 +40,28 @@ export function Login({ value }) {
   }, [value]);
 
   useEffect(() => {
-    // Monitor changes in sessionMessage and sessionError
     if (sessionMessage) {
       toast.success(sessionMessage, {
         position: "top-center",
         autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        progress: undefined,
         style: { fontSize: "1.5rem" },
         theme: localStorage.getItem("theme"),
         transition: Bounce,
       });
-    } else {
-      if (sessionError) {
-        if (sessionError === "Email not confirmed") {
-          toast.info(sessionError, {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            progress: undefined,
-            style: { fontSize: "1.5rem" },
-            theme: localStorage.getItem("theme"),
-            transition: Bounce,
-          });
-        } else {
-          toast.error(sessionError, {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            progress: undefined,
-            style: { fontSize: "1.5rem" },
-            theme: localStorage.getItem("theme"),
-            transition: Bounce,
-          });
-        }
-      }
+    } else if (sessionError) {
+      toast.error(sessionError, {
+        position: "top-center",
+        autoClose: 5000,
+        style: { fontSize: "1.5rem" },
+        theme: localStorage.getItem("theme"),
+        transition: Bounce,
+      });
     }
   }, [sessionMessage, sessionError]);
-  
+
   async function handleSubmit(e) {
     e.preventDefault();
 
-    // Basic validation
-    // TODO: Buscar por REGEXP 
     const newErrors = {};
     if (!formValues.email) newErrors.email = "Email is required";
     if (!formValues.password) newErrors.password = "Password is required";
@@ -105,10 +76,15 @@ export function Login({ value }) {
     if (Object.keys(newErrors).length > 0) return;
 
     if (mode === "signin") {
-      handleSignIn(formValues.email, formValues.password);
+      await handleSignIn(formValues.email.trim(), formValues.password);
     } else {
-      handleSignUp(formValues.email, formValues.password, formValues.username);
+      await handleSignUp(
+        formValues.email.trim(),
+        formValues.password,
+        formValues.username.trim()
+      );
     }
+
     setFormValues({
       email: "",
       password: "",
@@ -184,9 +160,6 @@ export function Login({ value }) {
               type="button"
               className={styles.iconBtn}
               onClick={handleTogglePassword}
-              aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
-              title={showPassword ? "Ocultar senha" : "Mostrar senha"}
-              aria-controls="password"
             >
               {showPassword ? <EyeOffIcon /> : <EyeIcon />}
             </button>
@@ -197,51 +170,26 @@ export function Login({ value }) {
         {mode === "register" && (
           <Field.Root name="confirmPassword" className={styles.field}>
             <Field.Label className={styles.label}>Confirm Password</Field.Label>
-            <div className={styles.inputWrapper}>
-              <Field.Control
-                type={showPassword ? "text" : "password"}
-                name="confirmPassword"
-                required
-                value={formValues.confirmPassword}
-                onChange={handleInputChange}
-                placeholder="Confirm your password"
-                className={styles.input}
-              />
-              <button
-                type="button"
-                className={styles.iconBtn}
-                onClick={handleTogglePassword}
-                aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
-                title={showPassword ? "Ocultar senha" : "Mostrar senha"}
-                aria-controls="password"
-              >
-                {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-              </button>
-            </div>
+            <Field.Control
+              type={showPassword ? "text" : "password"}
+              name="confirmPassword"
+              required
+              value={formValues.confirmPassword}
+              onChange={handleInputChange}
+              placeholder="Confirm your password"
+              className={styles.input}
+            />
             <Field.Error className={styles.error} />
           </Field.Root>
         )}
-        <button
-          type="submit"
-          className={styles.button}
-          disabled={sessionLoading}
-        >
+
+        <button type="submit" className={styles.button} disabled={sessionLoading}>
           {sessionLoading ? (
-            <CircularProgress
-              size={24}
-              thickness={4}
-              sx={{
-                color: "var(--primary-contrast)",
-                marginLeft: "1rem",
-              }}
-            />
-          ) : mode === "signin" ? (
-            "Sign In"
-          ) : (
-            "Register"
-          )}
+            <CircularProgress size={24} thickness={4} sx={{ color: "var(--primary-contrast)" }} />
+          ) : mode === "signin" ? "Sign In" : "Register"}
         </button>
       </Form>
+
       {mode === "register" && (
         <button onClick={() => setMode("signin")} className={styles.info}>
           Already have an account? Click here!
