@@ -10,15 +10,26 @@ export function Header() {
   const { cart } = useContext(CartContext);
   const { session } = useContext(SessionContext);
 
+  const isAdmin = session?.user?.user_metadata?.admin === true;
+
   return (
     <div className={styles.container}>
       <div>
         <Link to="/" className={styles.link}>
           <h1>TJA Megastore</h1>
         </Link>
+
         {session && (
           <Link to="/user" className={styles.welcomeMessage}>
-            Welcome, {session.user.user_metadata.username} {session.user.user_metadata.admin && '⭐'}
+            Welcome, {session.user.user_metadata.username}
+            {isAdmin && " ⭐"}
+          </Link>
+        )}
+
+        {/* 🔥 BOTÃO EDIT SÓ PARA ADMIN */}
+        {isAdmin && (
+          <Link to="/admin" className={styles.link}>
+            <strong>EDIT</strong>
           </Link>
         )}
       </div>
@@ -34,7 +45,9 @@ export function Header() {
             </Link>
           </>
         )}
+
         <ThemeToggle />
+
         <Link to="/cart" className={styles.link}>
           <div className={styles.cartInfo}>
             <div className={styles.cartIcon}>
@@ -47,15 +60,15 @@ export function Header() {
             </div>
 
             <p>
-  Total: $
-  {cart
-    .reduce((total, product) => {
-      const price = Number(product?.price) || 0;
-      const qty = Number(product?.qty) || 0;
-      return total + price * qty;
-    }, 0)
-    .toFixed(2)}
-</p>
+              Total: $
+              {cart
+                .reduce((total, product) => {
+                  const price = Number(product?.price) || 0;
+                  const qty = Number(product?.qty) || 0;
+                  return total + price * qty;
+                }, 0)
+                .toFixed(2)}
+            </p>
           </div>
         </Link>
       </div>

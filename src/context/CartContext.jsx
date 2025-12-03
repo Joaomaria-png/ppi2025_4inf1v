@@ -1,3 +1,4 @@
+// src/context/CartContext.jsx
 import { useState, useEffect, createContext, useContext } from "react";
 import { supabase } from "../utils/supabase";
 import { useSession } from "./SessionContext";
@@ -16,41 +17,39 @@ export function CartProvider({ children }) {
 
   const [error, setError] = useState(null);
 
-  // ----------------------------
-  // 🟦 Carrega produtos
-  // ----------------------------
+  // 🔵 Carregar produtos
+  // 🔵 Carregar produtos
+useEffect(() => {
+  refreshProducts();
+}, []);
+
+async function refreshProducts() {
+  setProductsLoading(true);
+
+  const { data, error } = await supabase.from("products").select("*");
+
+  if (error) {
+    setError(error.message);
+    setProducts([]);
+  } else {
+    setProducts(data || []);
+  }
+
+  setProductsLoading(false);
+}
+
+
+  // 🟡 Carregar carrinho quando o usuário logar
   useEffect(() => {
-    async function fetchProducts() {
-      setProductsLoading(true);
-
-      const { data, error } = await supabase.from("products").select("*");
-
-      if (error) {
-        setError(error.message);
-        setProducts([]);
-      } else {
-        setProducts(data || []);
-      }
-
-      setProductsLoading(false);
-    }
-
-    fetchProducts();
-  }, []);
-
-  // ----------------------------
-  // 🟨 Carrega carrinho do usuário logado
-  // ----------------------------
-  useEffect(() => {
-    if (session) refreshCart();
-  }, [session]);
+    if (userId) refreshCart();
+  }, [userId]);
 
   async function refreshCart() {
     setCartLoading(true);
 
     const { data, error } = await supabase
       .from("cart")
-      .select("*, products(*)") // pega dados do produto
+      .select("*, products(*)")
       .eq("user_id", userId);
 
     if (error) {
@@ -60,7 +59,6 @@ export function CartProvider({ children }) {
       return;
     }
 
-    // 🔄 Mapeia dados corretamente
     const fullCart = data.map((item) => ({
       id: item.product_id,
       qty: item.qty,
@@ -74,9 +72,7 @@ export function CartProvider({ children }) {
     setCartLoading(false);
   }
 
-  // ----------------------------
   // 🟩 Adicionar ao carrinho
-  // ----------------------------
   async function addToCart(product) {
     if (!session) {
       alert("Você precisa estar logado!");
@@ -93,13 +89,10 @@ export function CartProvider({ children }) {
     });
 
     if (error) setError(error.message);
-
     refreshCart();
   }
 
-  // ----------------------------
   // 🟧 Atualizar quantidade
-  // ----------------------------
   async function updateQtyCart(productId, qty) {
     if (qty < 1) return removeFromCart(productId);
 
@@ -113,9 +106,7 @@ export function CartProvider({ children }) {
     refreshCart();
   }
 
-  // ----------------------------
-  // 🟥 Remover item
-  // ----------------------------
+  // 🟥 Remover do carrinho
   async function removeFromCart(productId) {
     const { error } = await supabase
       .from("cart")
@@ -127,9 +118,7 @@ export function CartProvider({ children }) {
     refreshCart();
   }
 
-  // ----------------------------
   // ⬛ Limpar carrinho
-  // ----------------------------
   async function clearCart() {
     await supabase.from("cart").delete().eq("user_id", userId);
     setCart([]);
@@ -147,6 +136,7 @@ export function CartProvider({ children }) {
         updateQtyCart,
         removeFromCart,
         clearCart,
+        refreshProducts, // << ADICIONE AQUI
       }}
     >
       {children}

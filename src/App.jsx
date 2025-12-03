@@ -13,7 +13,9 @@ import { AdminProductList } from "./components/AdminProductList";
 
 // 🔒 Rota protegida para admin
 function AdminRoute({ children }) {
-  const { isAdmin } = useSession();
+  const { session } = useSession();
+  const isAdmin = session?.user?.user_metadata?.admin === true;
+
   return isAdmin ? children : <Navigate to="/" replace />;
 }
 

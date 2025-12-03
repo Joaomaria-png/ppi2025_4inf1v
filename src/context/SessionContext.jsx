@@ -1,3 +1,4 @@
+// src/context/SessionContext.jsx
 import { createContext, useContext, useState, useEffect } from "react";
 import { supabase } from "../utils/supabase";
 
@@ -10,17 +11,21 @@ export function SessionProvider({ children }) {
   const [sessionError, setSessionError] = useState(null);
 
   useEffect(() => {
+    // Carrega sessão atual ao iniciar
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
     });
 
-    // Listener para mudanças de auth
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, currentSession) => {
-      setSession(currentSession);
-    });
+    // Listener com API nova
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, currentSession) => {
+        setSession(currentSession);
+      }
+    );
 
+    // Cleanup correto da API atual
     return () => {
-      listener.subscription.unsubscribe();
+      listener?.subscription?.unsubscribe();
     };
   }, []);
 
@@ -28,6 +33,7 @@ export function SessionProvider({ children }) {
     setSessionLoading(true);
     setSessionMessage(null);
     setSessionError(null);
+
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -37,10 +43,11 @@ export function SessionProvider({ children }) {
           emailRedirectTo: `${window.location.origin}/signin`,
         },
       });
+
       if (error) throw error;
-      if (data.user) {
+
+      if (data.user)
         setSessionMessage("Cadastro realizado! Verifique seu e-mail.");
-      }
     } catch (error) {
       setSessionError(error.message);
     } finally {
@@ -52,10 +59,17 @@ export function SessionProvider({ children }) {
     setSessionLoading(true);
     setSessionMessage(null);
     setSessionError(null);
+
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
       if (error) throw error;
+
       if (data.session) {
+        // seta a sessão instantaneamente
         setSession(data.session);
         setSessionMessage("Login realizado com sucesso!");
       }
@@ -70,9 +84,11 @@ export function SessionProvider({ children }) {
     setSessionLoading(true);
     setSessionMessage(null);
     setSessionError(null);
+
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+
       setSession(null);
       setSessionMessage("Logout realizado com sucesso!");
     } catch (error) {
